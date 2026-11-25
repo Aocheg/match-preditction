@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: legendary-vs-learn2earn
+    runtime: python
+    plan: free
+    buildCommand: ""
+    startCommand: python3 server.py
+    envVars:
+      - key: ADMIN_PIN
+        sync: false

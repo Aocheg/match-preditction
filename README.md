@@ -19,8 +19,19 @@ Then open `http://127.0.0.1:8000` in your browser.
 
 ### Environment options
 - `PORT` (default `8000`)
-- `HOST` (default `127.0.0.1`, set to `0.0.0.0` to share on your local network)
+- `HOST` (defaults to `0.0.0.0` when `PORT` is set by a cloud host, otherwise `127.0.0.1`)
+- `DB_PATH` (default `./predictions.db`)
 - `ADMIN_PIN` (default `2026` — change this before hosting publicly!)
+
+## Host Live (Render — Free Tier)
+Because this app saves predictions and timestamps on the server (`server.py` + SQLite), use a Python host rather than GitHub Pages:
+1. Push your latest commit to GitHub (`https://github.com/Aocheg/match-preditction`).
+2. Sign in to [render.com](https://render.com) with GitHub -> **New +** -> **Web Service** -> select `Aocheg/match-preditction`.
+3. Confirm settings:
+   - **Runtime:** Python 3
+   - **Build Command:** *(leave empty)*
+   - **Start Command:** `python3 server.py`
+4. Under **Environment Variables**, add `ADMIN_PIN` with your own secret PIN, then click **Deploy Web Service**. Render will give you a public `https://...onrender.com` link to share.
 
 ## Admin Controls
 Click **Admin Panel** in the header or footer and sign in with the `ADMIN_PIN` to:

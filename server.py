@@ -87,6 +87,7 @@ class PredictionStore:
         return conn
 
     def _init_db(self):
+        os.makedirs(os.path.dirname(os.path.abspath(self.db_path)), exist_ok=True)
         with self._lock, self._connect() as conn:
             conn.execute(
                 """
@@ -485,9 +486,10 @@ def make_handler(store, auth):
     return PredictionHandler
 
 
-def run_server(host="127.0.0.1", port=8000, db_path=DEFAULT_DB_PATH, admin_pin=None):
+def run_server(host="127.0.0.1", port=8000, db_path=None, admin_pin=None):
     pin = admin_pin or os.environ.get("ADMIN_PIN", "2026")
-    store = PredictionStore(db_path=db_path)
+    resolved_db = db_path or os.environ.get("DB_PATH", DEFAULT_DB_PATH)
+    store = PredictionStore(db_path=resolved_db)
     auth = AdminAuth(pin)
     server = ThreadingHTTPServer((host, port), make_handler(store, auth))
     return server
@@ -495,7 +497,8 @@ def run_server(host="127.0.0.1", port=8000, db_path=DEFAULT_DB_PATH, admin_pin=N
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
-    host = os.environ.get("HOST", "127.0.0.1")
+    default_host = "0.0.0.0" if "PORT" in os.environ else "127.0.0.1"
+    host = os.environ.get("HOST", default_host)
     srv = run_server(host=host, port=port)
     print(f"Match Prediction Server running at http://{host}:{port}")
     try:
