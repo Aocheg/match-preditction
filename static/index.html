@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legendary FC vs Learn2Earn FC — Score Predictor</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="field-bg" aria-hidden="true">
+    <div class="field-turf"></div>
+    <svg class="field-lines" viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <rect x="40" y="30" width="1120" height="740" rx="6" />
+      <line x1="600" y1="30" x2="600" y2="770" />
+      <circle cx="600" cy="400" r="110" />
+      <circle cx="600" cy="400" r="6" fill="rgba(255,255,255,0.45)" />
+      <rect x="40" y="210" width="165" height="380" />
+      <rect x="40" y="300" width="65" height="200" />
+      <path d="M 205 320 A 95 95 0 0 1 205 480" />
+      <rect x="995" y="210" width="165" height="380" />
+      <rect x="1095" y="300" width="65" height="200" />
+      <path d="M 995 320 A 95 95 0 0 0 995 480" />
+    </svg>
+  </div>
+  <nav class="topbar" aria-label="Top navigation">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <span class="live-dot" aria-hidden="true"></span>
+        <span class="brand-name">MATCHDAY PREDICTOR</span>
+        <span id="kickoff-label" class="kickoff-pill">Venue: Mint School Pitch &bull; 5:00 PM</span>
+      </div>
+      <div class="topbar-actions">
+        <a class="nav-link" href="#predict">Predict</a>
+        <a class="nav-link" href="#leaderboard">Entries</a>
+        <span id="status-badge" class="status-pill status-open">Predictions Open</span>
+        <button id="open-admin-btn" class="btn btn-ghost" type="button">Admin Panel</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <img class="hero-bg" src="/hero-3d.jpg" alt="3D night football stadium with floodlights and metallic emerald-and-gold football">
+    <div class="hero-scrim" aria-hidden="true"></div>
+
+    <div class="wrap hero-content">
+      <div class="hero-left">
+        <p class="hero-kicker">OFFICIAL SCORE CHALLENGE &bull; WINNER TAKES UP TO ₦20,000</p>
+        <h1 class="hero-title">
+          <span class="team-highlight-home">Legendary FC</span>
+          <span class="title-vs">VS</span>
+          <span class="team-highlight-away">Learn2Earn FC</span>
+        </h1>
+        <p class="hero-lead">Call the exact full-time score before kickoff. The first three predictors with the exact scoreline win cash prizes — ranked strictly by submission time.</p>
+
+        <div class="hero-cta-row">
+          <a class="btn btn-primary hero-cta" href="#predict">Predict Score Now</a>
+          <a class="btn btn-glass" href="#leaderboard">Live Entries</a>
+          <a class="btn btn-glass" href="/fixture-poster.png" download="legendary-fc-vs-learn2earn-fc-fixture.png">Download Fixture</a>
+        </div>
+      </div>
+
+      <div class="hero-hud" aria-label="Broadcast scoreboard and prize pool">
+        <div class="hud-scoreboard">
+          <div class="hud-team">
+            <div class="crest crest-home" aria-hidden="true">LFC</div>
+            <span class="hud-role">HOME</span>
+            <strong class="hud-name">Legendary FC</strong>
+          </div>
+
+          <div class="vs-box">
+            <span id="score-display" class="vs-text">VS</span>
+            <span id="score-caption" class="vs-caption">Predict full-time</span>
+          </div>
+
+          <div class="hud-team">
+            <div class="crest crest-away" aria-hidden="true">L2E</div>
+            <span class="hud-role">AWAY</span>
+            <strong class="hud-name">Learn2Earn FC</strong>
+          </div>
+        </div>
+
+        <section class="prizes" aria-label="Prize pool">
+          <article class="prize-card prize-1">
+            <span class="prize-medal">1ST</span>
+            <div>
+              <span class="prize-rank">1st Exact Score</span>
+              <strong class="prize-amt">₦20,000</strong>
+            </div>
+          </article>
+          <article class="prize-card prize-2">
+            <span class="prize-medal">2ND</span>
+            <div>
+              <span class="prize-rank">2nd Exact Score</span>
+              <strong class="prize-amt">₦10,000</strong>
+            </div>
+          </article>
+          <article class="prize-card prize-3">
+            <span class="prize-medal">3RD</span>
+            <div>
+              <span class="prize-rank">3rd Exact Score</span>
+              <strong class="prize-amt">₦5,000</strong>
+            </div>
+          </article>
+        </section>
+        <p class="prize-rule">One entry per phone number or email. First 3 exact scores win in order of arrival.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap main-grid">
+    <section class="card wide teams-showcase" aria-label="Team lineups">
+      <div class="card-head board-head">
+        <div>
+          <span class="section-tag">TEAM REPRESENTATIVES</span>
+          <h2>Legendary FC vs Learn2Earn FC</h2>
+          <p class="muted">Venue: <strong>Mint School Pitch</strong> &bull; Time: <strong>5:00 PM</strong></p>
+        </div>
+        <a class="btn btn-secondary" href="/fixture-poster.png" download="legendary-fc-vs-learn2earn-fc-fixture.png">Download Fixture Poster</a>
+      </div>
+      <div class="team-cards">
+        <article class="team-photo-card team-photo-home">
+          <div class="team-photo-wrap">
+            <img src="/team-legendary.jpg" alt="Legendary FC representative in black and yellow jersey">
+            <span class="team-chip team-chip-home">HOME &bull; LFC</span>
+          </div>
+          <div class="team-photo-meta">
+            <h3>Legendary FC</h3>
+            <p class="muted">Black &amp; Yellow Shirt &bull; Black Shorts</p>
+          </div>
+        </article>
+
+        <div class="showcase-vs" aria-hidden="true">VS</div>
+
+        <article class="team-photo-card team-photo-away">
+          <div class="team-photo-wrap">
+            <img src="/team-learn2earn.jpg" alt="Learn2Earn FC representative in red and white jersey">
+            <span class="team-chip team-chip-away">AWAY &bull; L2E</span>
+          </div>
+          <div class="team-photo-meta">
+            <h3>Learn2Earn FC</h3>
+            <p class="muted">Red &amp; White Jersey</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="winners-section" class="card winners-card" hidden aria-labelledby="winners-heading">
+      <div class="card-head">
+        <div>
+          <h2 id="winners-heading">Official Match Winners</h2>
+          <p id="winners-sub" class="muted"></p>
+        </div>
+      </div>
+      <div id="winners-list" class="winners-grid"></div>
+    </section>
+
+    <section id="predict" class="card form-card" aria-labelledby="form-heading">
+      <div class="card-head">
+        <div>
+          <span class="section-tag">LOCK YOUR PICK</span>
+          <h2 id="form-heading">Submit Your Score Prediction</h2>
+          <p class="muted">Enter your details and predicted full-time scoreline. Timestamps are recorded by the server.</p>
+        </div>
+      </div>
+
+      <form id="prediction-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="pred-name">Full Name</label>
+            <input id="pred-name" name="name" type="text" maxlength="60" required placeholder="e.g. Chinedu Okafor" autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="pred-contact">Phone Number or Email</label>
+            <input id="pred-contact" name="contact" type="text" maxlength="120" required placeholder="e.g. 08012345678 or you@email.com">
+          </div>
+        </div>
+
+        <div class="score-picker" role="group" aria-label="Score prediction">
+          <div class="score-team">
+            <span class="score-badge home-dot">HOME</span>
+            <span class="score-label">Legendary FC</span>
+            <div class="stepper">
+              <button class="step-btn" type="button" data-target="home-score" data-delta="-1" aria-label="Decrease Legendary FC score">−</button>
+              <input id="home-score" name="home_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Legendary FC score">
+              <button class="step-btn" type="button" data-target="home-score" data-delta="1" aria-label="Increase Legendary FC score">+</button>
+            </div>
+          </div>
+
+          <span class="score-colon" aria-hidden="true">:</span>
+
+          <div class="score-team">
+            <span class="score-badge away-dot">AWAY</span>
+            <span class="score-label">Learn2Earn FC</span>
+            <div class="stepper">
+              <button class="step-btn" type="button" data-target="away-score" data-delta="-1" aria-label="Decrease Learn2Earn FC score">−</button>
+              <input id="away-score" name="away_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Learn2Earn FC score">
+              <button class="step-btn" type="button" data-target="away-score" data-delta="1" aria-label="Increase Learn2Earn FC score">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="form-feedback" class="feedback" role="status" hidden></div>
+
+        <button id="submit-btn" class="btn btn-primary btn-block" type="submit">Lock In Prediction</button>
+      </form>
+
+      <div id="ticket-box" class="ticket" hidden>
+        <p class="ticket-tag">Official Entry Ticket</p>
+        <p id="ticket-summary" class="ticket-main"></p>
+        <p id="ticket-meta" class="ticket-meta"></p>
+      </div>
+    </section>
+
+    <section class="card stats-card" aria-labelledby="stats-heading">
+      <div class="card-head">
+        <div>
+          <span class="section-tag">LIVE ANALYTICS</span>
+          <h2 id="stats-heading">Crowd Forecast</h2>
+          <p id="stats-total" class="muted">0 predictions submitted so far</p>
+        </div>
+      </div>
+
+      <div class="split-bar-wrap" aria-label="Pick distribution">
+        <div class="split-labels">
+          <span id="pct-home">Legendary FC: 0%</span>
+          <span id="pct-draw">Draw: 0%</span>
+          <span id="pct-away">Learn2Earn FC: 0%</span>
+        </div>
+        <div class="split-bar">
+          <div id="bar-home" class="bar-seg bar-home" style="width: 33.3%"></div>
+          <div id="bar-draw" class="bar-seg bar-draw" style="width: 33.3%"></div>
+          <div id="bar-away" class="bar-seg bar-away" style="width: 33.4%"></div>
+        </div>
+      </div>
+
+      <div class="popular-box">
+        <h3>Trending Scorelines</h3>
+        <ul id="top-scores" class="chip-list">
+          <li class="muted">No predictions yet.</li>
+        </ul>
+      </div>
+
+      <div class="rules-panel">
+        <h3>How Prizes Are Awarded</h3>
+        <ul>
+          <li><strong>1st Exact Score:</strong> ₦20,000</li>
+          <li><strong>2nd Exact Score:</strong> ₦10,000</li>
+          <li><strong>3rd Exact Score:</strong> ₦5,000</li>
+          <li>Exact match is based on official full-time score, ordered by server timestamp.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="card board-card wide" aria-labelledby="board-heading">
+      <div class="card-head board-head">
+        <div>
+          <span class="section-tag">ENTRY QUEUE</span>
+          <h2 id="board-heading">Submitted Predictions</h2>
+          <p class="muted">Ordered strictly by entry number (#1, #2, #3...) — first three exact scores win.</p>
+        </div>
+        <div class="search-wrap">
+          <label class="sr-only" for="search-input">Search predictions</label>
+          <input id="search-input" type="search" placeholder="Search name or score (e.g. 2-1)">
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Predictor</th>
+              <th scope="col">Contact</th>
+              <th scope="col">Prediction</th>
+              <th scope="col">Submitted (UTC)</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody id="predictions-body">
+            <tr><td colspan="6" class="empty-cell">Loading predictions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Legendary FC vs Learn2Earn FC &bull; First 3 exact scorelines win ₦20,000, ₦10,000, and ₦5,000.</p>
+    <button id="footer-admin-btn" class="link-btn" type="button">Manage Match (Admin)</button>
+  </footer>
+
+  <dialog id="admin-dialog" aria-labelledby="admin-title">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="admin-title">Match Admin Panel</h2>
+        <button id="close-admin-btn" class="btn btn-ghost" type="button" aria-label="Close admin panel">&times;</button>
+      </div>
+
+      <div id="admin-login-view" class="modal-body">
+        <p class="muted">Sign in with the admin PIN to lock predictions, publish the final score, and view full winner contacts.</p>
+        <form id="admin-login-form">
+          <div class="field">
+            <label for="admin-pin">Admin PIN</label>
+            <input id="admin-pin" type="password" required placeholder="Enter PIN (default: 2026)">
+          </div>
+          <div id="admin-login-error" class="feedback feedback-error" hidden></div>
+          <button class="btn btn-primary" type="submit">Unlock Admin Panel</button>
+        </form>
+      </div>
+
+      <div id="admin-controls-view" class="modal-body" hidden>
+        <form id="admin-match-form" class="admin-section">
+          <h3>Match Status &amp; Final Score</h3>
+          <div class="field-row">
+            <div class="field">
+              <label for="admin-kickoff">Match Info / Kickoff Label</label>
+              <input id="admin-kickoff" type="text" maxlength="80" required>
+            </div>
+            <div class="field">
+              <label for="admin-status">Prediction Status</label>
+              <select id="admin-status">
+                <option value="open">Open (accepting entries)</option>
+                <option value="locked">Locked (kickoff / closed)</option>
+                <option value="finished">Finished (publish final score)</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="final-score-fields" class="field-row" hidden>
+            <div class="field">
+              <label for="final-home">Final Score: Legendary FC</label>
+              <input id="final-home" type="number" min="0" max="50" value="0">
+            </div>
+            <div class="field">
+              <label for="final-away">Final Score: Learn2Earn FC</label>
+              <input id="final-away" type="number" min="0" max="50" value="0">
+            </div>
+          </div>
+
+          <div id="admin-feedback" class="feedback" hidden></div>
+
+          <div class="admin-btn-row">
+            <button class="btn btn-primary" type="submit">Save Match Settings</button>
+            <button id="export-csv-btn" class="btn btn-secondary" type="button">Download CSV</button>
+            <button id="reset-match-btn" class="btn btn-danger" type="button">Reset Predictions</button>
+          </div>
+        </form>
+
+        <div class="admin-section">
+          <h3>Full Entries &amp; Unmasked Contacts</h3>
+          <div class="table-wrap admin-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Full Contact</th>
+                  <th scope="col">Score</th>
+                  <th scope="col">Result</th>
+                </tr>
+              </thead>
+              <tbody id="admin-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>
