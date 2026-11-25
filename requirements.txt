@@ -1,1 +1,3 @@
 # Zero external dependencies — uses Python 3 standard library only.
+fastapi
+uvicorn
