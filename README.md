@@ -1,9 +1,10 @@
-# Legendary FC vs Learn2Earn FC — Match Prediction Site
+# Fellows vs Mentors — Volleyball Match Prediction Site
 
-A full-stack match score prediction web application built with Python's standard library (`ThreadingHTTPServer` + `sqlite3`) and vanilla HTML/CSS/JavaScript.
+A full-stack volleyball match score prediction web application built with Python's standard library (`ThreadingHTTPServer` + `sqlite3`) and vanilla HTML/CSS/JavaScript.
 
 ## Rules & Prizes
-- **Match:** Legendary FC vs Learn2Earn FC
+- **Match:** Fellows vs Mentors (Volleyball)
+- **Venue & Time:** Leef Center Volleyball Court • 5:00 PM
 - **Prizes (first 3 exact-score predictions, ranked strictly by server arrival order):**
   - **1st:** ₦20,000
   - **2nd:** ₦10,000

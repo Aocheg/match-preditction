@@ -46,8 +46,8 @@ class PredictionServerTests(unittest.TestCase):
     def test_prediction_flow_dedup_lock_and_top3_prizes(self):
         status, initial = self._req("GET", "/api/state")
         self.assertEqual(status, 200)
-        self.assertEqual(initial["match"]["home_team"], "Legendary FC")
-        self.assertEqual(initial["match"]["away_team"], "Learn2Earn FC")
+        self.assertEqual(initial["match"]["home_team"], "Fellows")
+        self.assertEqual(initial["match"]["away_team"], "Mentors")
         self.assertEqual(initial["match"]["prizes"], [20000, 10000, 5000])
 
         # Submit 5 predictions: 4 exact (2-1), 1 wrong (0-0)

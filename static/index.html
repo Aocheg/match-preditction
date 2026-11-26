@@ -3,31 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Legendary FC vs Learn2Earn FC — Score Predictor</title>
+  <title>Fellows vs Mentors — Volleyball Score Predictor</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="field-bg" aria-hidden="true">
-    <div class="field-turf"></div>
-    <svg class="field-lines" viewBox="0 0 1200 800" preserveAspectRatio="none">
-      <rect x="40" y="30" width="1120" height="740" rx="6" />
-      <line x1="600" y1="30" x2="600" y2="770" />
-      <circle cx="600" cy="400" r="110" />
-      <circle cx="600" cy="400" r="6" fill="rgba(255,255,255,0.45)" />
-      <rect x="40" y="210" width="165" height="380" />
-      <rect x="40" y="300" width="65" height="200" />
-      <path d="M 205 320 A 95 95 0 0 1 205 480" />
-      <rect x="995" y="210" width="165" height="380" />
-      <rect x="1095" y="300" width="65" height="200" />
-      <path d="M 995 320 A 95 95 0 0 0 995 480" />
+  <div class="court-bg" aria-hidden="true">
+    <div class="court-floor"></div>
+    <svg class="court-lines" viewBox="0 0 1200 720" preserveAspectRatio="none">
+      <!-- Outer volleyball court boundary -->
+      <rect x="80" y="70" width="1040" height="580" rx="4" fill="rgba(194, 92, 42, 0.24)" />
+      <!-- Attack zones (front courts) -->
+      <rect x="425" y="70" width="175" height="580" fill="rgba(234, 138, 62, 0.14)" stroke="none" />
+      <rect x="600" y="70" width="175" height="580" fill="rgba(234, 138, 62, 0.14)" stroke="none" />
+      <!-- 3-meter attack lines -->
+      <line x1="425" y1="70" x2="425" y2="650" />
+      <line x1="775" y1="70" x2="775" y2="650" />
+      <!-- Center line & net mesh -->
+      <line x1="600" y1="45" x2="600" y2="675" stroke-width="5" stroke="rgba(255,255,255,0.45)" />
+      <line x1="600" y1="45" x2="600" y2="675" stroke-width="14" stroke-dasharray="6 8" stroke="rgba(250, 204, 21, 0.22)" />
     </svg>
   </div>
+
   <nav class="topbar" aria-label="Top navigation">
     <div class="wrap topbar-inner">
       <div class="brand">
         <span class="live-dot" aria-hidden="true"></span>
-        <span class="brand-name">MATCHDAY PREDICTOR</span>
-        <span id="kickoff-label" class="kickoff-pill">Venue: Mint School Pitch &bull; 5:00 PM</span>
+        <span class="brand-name">VOLLEYBALL PREDICTOR</span>
+        <span id="kickoff-label" class="kickoff-pill">Venue: Leef Center Volleyball Court &bull; 5:00 PM</span>
       </div>
       <div class="topbar-actions">
         <a class="nav-link" href="#predict">Predict</a>
@@ -39,43 +41,57 @@
   </nav>
 
   <header class="hero">
-    <img class="hero-bg" src="/hero-3d.jpg" alt="3D night football stadium with floodlights and metallic emerald-and-gold football">
-    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-volleyball-glow" aria-hidden="true">
+      <svg class="hero-vball" viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="vb-grad" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#fef9c3" />
+            <stop offset="45%" stop-color="#facc15" />
+            <stop offset="100%" stop-color="#0f766e" />
+          </radialGradient>
+        </defs>
+        <circle cx="120" cy="120" r="102" fill="url(#vb-grad)" stroke="rgba(255,255,255,0.55)" stroke-width="3" />
+        <path d="M120 18 C155 55, 165 105, 120 120 C75 135, 85 185, 120 222" fill="none" stroke="rgba(15,23,42,0.55)" stroke-width="5" />
+        <path d="M24 85 C65 75, 100 95, 120 120 C140 145, 175 165, 216 155" fill="none" stroke="rgba(15,23,42,0.55)" stroke-width="5" />
+        <path d="M36 175 C70 150, 95 135, 120 120 C145 105, 170 90, 204 65" fill="none" stroke="rgba(15,23,42,0.55)" stroke-width="5" />
+        <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+      </svg>
+    </div>
 
     <div class="wrap hero-content">
       <div class="hero-left">
-        <p class="hero-kicker">OFFICIAL SCORE CHALLENGE &bull; WINNER TAKES UP TO ₦20,000</p>
+        <p class="hero-kicker">VOLLEYBALL SHOWDOWN &bull; LEEF CENTER VOLLEYBALL COURT &bull; 5:00 PM</p>
         <h1 class="hero-title">
-          <span class="team-highlight-home">Legendary FC</span>
+          <span class="team-highlight-home">Fellows</span>
           <span class="title-vs">VS</span>
-          <span class="team-highlight-away">Learn2Earn FC</span>
+          <span class="team-highlight-away">Mentors</span>
         </h1>
-        <p class="hero-lead">Call the exact full-time score before kickoff. The first three predictors with the exact scoreline win cash prizes — ranked strictly by submission time.</p>
+        <p class="hero-lead">Predict the exact final match score before first serve at 5:00 PM. The first three predictors with the exact scoreline win cash prizes — ranked strictly by submission time.</p>
 
         <div class="hero-cta-row">
           <a class="btn btn-primary hero-cta" href="#predict">Predict Score Now</a>
           <a class="btn btn-glass" href="#leaderboard">Live Entries</a>
-          <a class="btn btn-glass" href="/fixture-poster.png" download="legendary-fc-vs-learn2earn-fc-fixture.png">Download Fixture</a>
+          <a class="btn btn-glass" href="/fixture-poster.png" download="fellows-vs-mentors-volleyball-fixture.png">Download Fixture</a>
         </div>
       </div>
 
-      <div class="hero-hud" aria-label="Broadcast scoreboard and prize pool">
+      <div class="hero-hud" aria-label="Matchup scoreboard and prize pool">
         <div class="hud-scoreboard">
           <div class="hud-team">
-            <div class="crest crest-home" aria-hidden="true">LFC</div>
+            <div class="crest crest-home" aria-hidden="true">FLW</div>
             <span class="hud-role">HOME</span>
-            <strong class="hud-name">Legendary FC</strong>
+            <strong class="hud-name">Fellows</strong>
           </div>
 
           <div class="vs-box">
             <span id="score-display" class="vs-text">VS</span>
-            <span id="score-caption" class="vs-caption">Predict full-time</span>
+            <span id="score-caption" class="vs-caption">Predict final score</span>
           </div>
 
           <div class="hud-team">
-            <div class="crest crest-away" aria-hidden="true">L2E</div>
+            <div class="crest crest-away" aria-hidden="true">MNT</div>
             <span class="hud-role">AWAY</span>
-            <strong class="hud-name">Learn2Earn FC</strong>
+            <strong class="hud-name">Mentors</strong>
           </div>
         </div>
 
@@ -108,37 +124,78 @@
   </header>
 
   <main class="wrap main-grid">
-    <section class="card wide teams-showcase" aria-label="Team lineups">
+    <section class="card wide teams-showcase" aria-label="Team logos">
       <div class="card-head board-head">
         <div>
-          <span class="section-tag">TEAM REPRESENTATIVES</span>
-          <h2>Legendary FC vs Learn2Earn FC</h2>
-          <p class="muted">Venue: <strong>Mint School Pitch</strong> &bull; Time: <strong>5:00 PM</strong></p>
+          <span class="section-tag">VOLLEYBALL MATCHUP</span>
+          <h2>Fellows vs Mentors</h2>
+          <p class="muted">Venue: <strong>Leef Center Volleyball Court</strong> &bull; Time: <strong>5:00 PM</strong></p>
         </div>
-        <a class="btn btn-secondary" href="/fixture-poster.png" download="legendary-fc-vs-learn2earn-fc-fixture.png">Download Fixture Poster</a>
+        <a class="btn btn-secondary" href="/fixture-poster.png" download="fellows-vs-mentors-volleyball-fixture.png">Download Fixture Poster</a>
       </div>
-      <div class="team-cards">
-        <article class="team-photo-card team-photo-home">
-          <div class="team-photo-wrap">
-            <img src="/team-legendary.jpg" alt="Legendary FC representative in black and yellow jersey">
-            <span class="team-chip team-chip-home">HOME &bull; LFC</span>
-          </div>
-          <div class="team-photo-meta">
-            <h3>Legendary FC</h3>
-            <p class="muted">Black &amp; Yellow Shirt &bull; Black Shorts</p>
+
+      <div class="team-logo-grid">
+        <article class="team-logo-card team-logo-home">
+          <svg class="team-crest-svg" viewBox="0 0 220 220" role="img" aria-label="Fellows Volleyball Logo">
+            <defs>
+              <linearGradient id="fellows-shield" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#facc15" />
+                <stop offset="55%" stop-color="#15803d" />
+                <stop offset="100%" stop-color="#052e16" />
+              </linearGradient>
+              <linearGradient id="fellows-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#ca8a04" />
+              </linearGradient>
+            </defs>
+            <path d="M110 14 L192 44 V116 C192 166 152 196 110 208 C68 196 28 166 28 116 V44 Z" fill="url(#fellows-shield)" stroke="url(#fellows-rim)" stroke-width="6" />
+            <path d="M110 26 L180 51 V114 C180 156 146 182 110 194 C74 182 40 156 40 114 V51 Z" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" />
+            <!-- Volleyball emblem -->
+            <circle cx="110" cy="86" r="34" fill="#fef08a" stroke="#052e16" stroke-width="3" />
+            <path d="M110 52 C123 68, 124 83, 110 86 C96 89, 97 104, 110 120" fill="none" stroke="#052e16" stroke-width="2.6" />
+            <path d="M78 75 C94 71, 103 78, 110 86 C117 94, 126 101, 142 97" fill="none" stroke="#052e16" stroke-width="2.6" />
+            <path d="M83 105 C94 97, 102 91, 110 86 C118 81, 126 75, 137 67" fill="none" stroke="#052e16" stroke-width="2.6" />
+            <!-- Ribbon banner -->
+            <rect x="42" y="132" width="136" height="32" rx="8" fill="#071a10" stroke="#facc15" stroke-width="2.5" />
+            <text x="110" y="153" text-anchor="middle" fill="#fde047" font-family="system-ui, sans-serif" font-size="16" font-weight="900" letter-spacing="2">FELLOWS</text>
+          </svg>
+          <div class="team-logo-info">
+            <span class="team-chip team-chip-home">HOME TEAM</span>
+            <h3>Fellows</h3>
+            <p class="muted">Gold &amp; Emerald Volleyball Club</p>
           </div>
         </article>
 
         <div class="showcase-vs" aria-hidden="true">VS</div>
 
-        <article class="team-photo-card team-photo-away">
-          <div class="team-photo-wrap">
-            <img src="/team-learn2earn.jpg" alt="Learn2Earn FC representative in red and white jersey">
-            <span class="team-chip team-chip-away">AWAY &bull; L2E</span>
-          </div>
-          <div class="team-photo-meta">
-            <h3>Learn2Earn FC</h3>
-            <p class="muted">Red &amp; White Jersey</p>
+        <article class="team-logo-card team-logo-away">
+          <svg class="team-crest-svg" viewBox="0 0 220 220" role="img" aria-label="Mentors Volleyball Logo">
+            <defs>
+              <linearGradient id="mentors-shield" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ef4444" />
+                <stop offset="55%" stop-color="#991b1b" />
+                <stop offset="100%" stop-color="#1e1b4b" />
+              </linearGradient>
+              <linearGradient id="mentors-rim" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#f8fafc" />
+                <stop offset="100%" stop-color="#94a3b8" />
+              </linearGradient>
+            </defs>
+            <path d="M110 14 L192 44 V116 C192 166 152 196 110 208 C68 196 28 166 28 116 V44 Z" fill="url(#mentors-shield)" stroke="url(#mentors-rim)" stroke-width="6" />
+            <path d="M110 26 L180 51 V114 C180 156 146 182 110 194 C74 182 40 156 40 114 V51 Z" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+            <!-- Volleyball emblem -->
+            <circle cx="110" cy="86" r="34" fill="#f8fafc" stroke="#1e1b4b" stroke-width="3" />
+            <path d="M110 52 C123 68, 124 83, 110 86 C96 89, 97 104, 110 120" fill="none" stroke="#991b1b" stroke-width="2.6" />
+            <path d="M78 75 C94 71, 103 78, 110 86 C117 94, 126 101, 142 97" fill="none" stroke="#991b1b" stroke-width="2.6" />
+            <path d="M83 105 C94 97, 102 91, 110 86 C118 81, 126 75, 137 67" fill="none" stroke="#991b1b" stroke-width="2.6" />
+            <!-- Ribbon banner -->
+            <rect x="42" y="132" width="136" height="32" rx="8" fill="#170b18" stroke="#f8fafc" stroke-width="2.5" />
+            <text x="110" y="153" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="16" font-weight="900" letter-spacing="2">MENTORS</text>
+          </svg>
+          <div class="team-logo-info">
+            <span class="team-chip team-chip-away">AWAY TEAM</span>
+            <h3>Mentors</h3>
+            <p class="muted">Crimson &amp; Silver Volleyball Club</p>
           </div>
         </article>
       </div>
@@ -159,7 +216,7 @@
         <div>
           <span class="section-tag">LOCK YOUR PICK</span>
           <h2 id="form-heading">Submit Your Score Prediction</h2>
-          <p class="muted">Enter your details and predicted full-time scoreline. Timestamps are recorded by the server.</p>
+          <p class="muted">Enter your details and predicted volleyball match score. Timestamps are recorded by the server.</p>
         </div>
       </div>
 
@@ -178,11 +235,11 @@
         <div class="score-picker" role="group" aria-label="Score prediction">
           <div class="score-team">
             <span class="score-badge home-dot">HOME</span>
-            <span class="score-label">Legendary FC</span>
+            <span class="score-label">Fellows</span>
             <div class="stepper">
-              <button class="step-btn" type="button" data-target="home-score" data-delta="-1" aria-label="Decrease Legendary FC score">−</button>
-              <input id="home-score" name="home_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Legendary FC score">
-              <button class="step-btn" type="button" data-target="home-score" data-delta="1" aria-label="Increase Legendary FC score">+</button>
+              <button class="step-btn" type="button" data-target="home-score" data-delta="-1" aria-label="Decrease Fellows score">−</button>
+              <input id="home-score" name="home_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Fellows score">
+              <button class="step-btn" type="button" data-target="home-score" data-delta="1" aria-label="Increase Fellows score">+</button>
             </div>
           </div>
 
@@ -190,11 +247,11 @@
 
           <div class="score-team">
             <span class="score-badge away-dot">AWAY</span>
-            <span class="score-label">Learn2Earn FC</span>
+            <span class="score-label">Mentors</span>
             <div class="stepper">
-              <button class="step-btn" type="button" data-target="away-score" data-delta="-1" aria-label="Decrease Learn2Earn FC score">−</button>
-              <input id="away-score" name="away_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Learn2Earn FC score">
-              <button class="step-btn" type="button" data-target="away-score" data-delta="1" aria-label="Increase Learn2Earn FC score">+</button>
+              <button class="step-btn" type="button" data-target="away-score" data-delta="-1" aria-label="Decrease Mentors score">−</button>
+              <input id="away-score" name="away_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Mentors score">
+              <button class="step-btn" type="button" data-target="away-score" data-delta="1" aria-label="Increase Mentors score">+</button>
             </div>
           </div>
         </div>
@@ -222,9 +279,9 @@
 
       <div class="split-bar-wrap" aria-label="Pick distribution">
         <div class="split-labels">
-          <span id="pct-home">Legendary FC: 0%</span>
+          <span id="pct-home">Fellows: 0%</span>
           <span id="pct-draw">Draw: 0%</span>
-          <span id="pct-away">Learn2Earn FC: 0%</span>
+          <span id="pct-away">Mentors: 0%</span>
         </div>
         <div class="split-bar">
           <div id="bar-home" class="bar-seg bar-home" style="width: 33.3%"></div>
@@ -246,7 +303,7 @@
           <li><strong>1st Exact Score:</strong> ₦20,000</li>
           <li><strong>2nd Exact Score:</strong> ₦10,000</li>
           <li><strong>3rd Exact Score:</strong> ₦5,000</li>
-          <li>Exact match is based on official full-time score, ordered by server timestamp.</li>
+          <li>Exact match is based on the official final volleyball score, ordered by server timestamp.</li>
         </ul>
       </div>
     </section>
@@ -260,7 +317,7 @@
         </div>
         <div class="search-wrap">
           <label class="sr-only" for="search-input">Search predictions</label>
-          <input id="search-input" type="search" placeholder="Search name or score (e.g. 2-1)">
+          <input id="search-input" type="search" placeholder="Search name or score (e.g. 3-1)">
         </div>
       </div>
 
@@ -285,7 +342,7 @@
   </main>
 
   <footer class="wrap footer">
-    <p>Legendary FC vs Learn2Earn FC &bull; First 3 exact scorelines win ₦20,000, ₦10,000, and ₦5,000.</p>
+    <p>Fellows vs Mentors (Volleyball) &bull; Leef Center Volleyball Court, 5:00 PM &bull; Prizes: ₦20,000, ₦10,000, ₦5,000.</p>
     <button id="footer-admin-btn" class="link-btn" type="button">Manage Match (Admin)</button>
   </footer>
 
@@ -313,14 +370,14 @@
           <h3>Match Status &amp; Final Score</h3>
           <div class="field-row">
             <div class="field">
-              <label for="admin-kickoff">Match Info / Kickoff Label</label>
+              <label for="admin-kickoff">Match Info / Venue &amp; Time</label>
               <input id="admin-kickoff" type="text" maxlength="80" required>
             </div>
             <div class="field">
               <label for="admin-status">Prediction Status</label>
               <select id="admin-status">
                 <option value="open">Open (accepting entries)</option>
-                <option value="locked">Locked (kickoff / closed)</option>
+                <option value="locked">Locked (serve / closed)</option>
                 <option value="finished">Finished (publish final score)</option>
               </select>
             </div>
@@ -328,11 +385,11 @@
 
           <div id="final-score-fields" class="field-row" hidden>
             <div class="field">
-              <label for="final-home">Final Score: Legendary FC</label>
+              <label for="final-home">Final Score: Fellows</label>
               <input id="final-home" type="number" min="0" max="50" value="0">
             </div>
             <div class="field">
-              <label for="final-away">Final Score: Learn2Earn FC</label>
+              <label for="final-away">Final Score: Mentors</label>
               <input id="final-away" type="number" min="0" max="50" value="0">
             </div>
           </div>

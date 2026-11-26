@@ -50,7 +50,7 @@
   }
 
   function renderMatch(match) {
-    $('kickoff-label').textContent = match.kickoff_label || 'Matchday Prediction';
+    $('kickoff-label').textContent = match.kickoff_label || 'Venue: Leef Center Volleyball Court • 5:00 PM';
     var badge = $('status-badge');
     badge.className = 'status-pill';
     if (match.status === 'open') {
@@ -69,7 +69,7 @@
       $('score-caption').textContent = 'Official Full-Time Score';
     } else {
       $('score-display').textContent = 'VS';
-      $('score-caption').textContent = match.status === 'open' ? 'Predict the full-time score' : 'Entry window closed';
+      $('score-caption').textContent = match.status === 'open' ? 'Predict the final match score' : 'Entry window closed';
     }
 
     var form = $('prediction-form');
@@ -131,9 +131,9 @@
     var dp = total ? Math.round((stats.draw_picks / total) * 100) : 0;
     var ap = total ? Math.max(0, 100 - hp - dp) : 0;
 
-    $('pct-home').textContent = 'Legendary FC: ' + hp + '%';
+    $('pct-home').textContent = 'Fellows: ' + hp + '%';
     $('pct-draw').textContent = 'Draw: ' + dp + '%';
-    $('pct-away').textContent = 'Learn2Earn FC: ' + ap + '%';
+    $('pct-away').textContent = 'Mentors: ' + ap + '%';
 
     if (total === 0) {
       $('bar-home').style.width = '33.3%';
@@ -282,7 +282,7 @@
       renderAll(res.snapshot);
       var p = res.prediction;
       $('ticket-box').hidden = false;
-      $('ticket-summary').textContent = 'Entry #' + p.order + ': ' + p.name + ' picked Legendary FC ' + p.home_score + ' - ' + p.away_score + ' Learn2Earn FC';
+      $('ticket-summary').textContent = 'Entry #' + p.order + ': ' + p.name + ' picked Fellows ' + p.home_score + ' - ' + p.away_score + ' Mentors';
       $('ticket-meta').textContent = 'Contact: ' + p.contact_masked + ' • Recorded at ' + formatTime(p.created_at);
       $('prediction-form').reset();
       $('home-score').value = '0';
@@ -378,7 +378,7 @@
 
   $('export-csv-btn').addEventListener('click', function () {
     if (!state.snapshot) return;
-    var lines = [['Order', 'Name', 'Contact', 'Legendary FC', 'Learn2Earn FC', 'Created At', 'Outcome', 'Prize']];
+    var lines = [['Order', 'Name', 'Contact', 'Fellows', 'Mentors', 'Created At', 'Outcome', 'Prize']];
     state.snapshot.predictions.forEach(function (p) {
       lines.push([p.order, p.name, p.contact || p.contact_masked, p.home_score, p.away_score, p.created_at, p.outcome, p.prize]);
     });
@@ -391,7 +391,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'legendary-fc-vs-learn2earn-fc-predictions.csv';
+    a.download = 'fellows-vs-mentors-volleyball-predictions.csv';
     a.click();
     URL.revokeObjectURL(url);
   });

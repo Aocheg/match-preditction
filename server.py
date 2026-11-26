@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Match Prediction web server for Legendary FC vs Learn2Earn FC.
+"""Volleyball Match Prediction web server for Fellows vs Mentors.
 
 Zero-dependency Python 3 server using ThreadingHTTPServer and SQLite.
 """
@@ -21,8 +21,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 DEFAULT_DB_PATH = os.path.join(BASE_DIR, "predictions.db")
 
-HOME_TEAM = "Legendary FC"
-AWAY_TEAM = "Learn2Earn FC"
+HOME_TEAM = "Fellows"
+AWAY_TEAM = "Mentors"
 PRIZES = [20000, 10000, 5000]
 VALID_STATUSES = {"open", "locked", "finished"}
 
@@ -96,7 +96,7 @@ class PredictionStore:
                     home_team TEXT NOT NULL,
                     away_team TEXT NOT NULL,
                     status TEXT NOT NULL DEFAULT 'open',
-                    kickoff_label TEXT NOT NULL DEFAULT 'Venue: Mint School Pitch • 5:00 PM',
+                    kickoff_label TEXT NOT NULL DEFAULT 'Venue: Leef Center Volleyball Court • 5:00 PM',
                     final_home_score INTEGER,
                     final_away_score INTEGER,
                     updated_at TEXT NOT NULL
@@ -122,7 +122,7 @@ class PredictionStore:
                     """
                     INSERT INTO match_state (
                         id, home_team, away_team, status, kickoff_label, updated_at
-                    ) VALUES (1, ?, ?, 'open', 'Venue: Mint School Pitch • 5:00 PM', ?)
+                    ) VALUES (1, ?, ?, 'open', 'Venue: Leef Center Volleyball Court • 5:00 PM', ?)
                     """,
                     (HOME_TEAM, AWAY_TEAM, utc_now_iso()),
                 )
@@ -133,7 +133,8 @@ class PredictionStore:
                     SET home_team = ?,
                         away_team = ?,
                         kickoff_label = CASE
-                            WHEN kickoff_label = 'Matchday Prediction' THEN 'Venue: Mint School Pitch • 5:00 PM'
+                            WHEN kickoff_label IN ('Matchday Prediction', 'Venue: Mint School Pitch • 5:00 PM')
+                            THEN 'Venue: Leef Center Volleyball Court • 5:00 PM'
                             ELSE kickoff_label
                         END
                     WHERE id = 1
