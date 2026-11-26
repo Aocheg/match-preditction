@@ -2,7 +2,13 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var state = { snapshot: null, adminToken: '', query: '' };
+  var state = {
+    snapshot: null,
+    adminToken: '',
+    query: '',
+    userPicks: { 1: '', 2: '', 3: '' },
+    adminPicks: { 1: '', 2: '', 3: '' }
+  };
 
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -18,6 +24,69 @@
   function formatTime(iso) {
     if (!iso) return '';
     return iso.replace('T', ' ').replace('+00:00', ' UTC').replace('Z', ' UTC');
+  }
+
+  function buildProgressionFromPicks(picks) {
+    var r1 = picks[1];
+    var r2 = picks[2];
+    var r3 = picks[3];
+    if (!r1 || !r2) return null;
+    if (r1 === r2) return [r1, r2];
+    if (!r3) return null;
+    return [r1, r2, r3];
+  }
+
+  function formatRoundsText(rounds) {
+    return rounds.map(function (t, i) { return 'R' + (i + 1) + ': ' + t; }).join(' → ');
+  }
+
+  function seriesScoreText(rounds) {
+    var h = rounds.filter(function (t) { return t === 'Fellows'; }).length;
+    var a = rounds.filter(function (t) { return t === 'Mentors'; }).length;
+    var winner = h > a ? 'Fellows' : 'Mentors';
+    return winner + ' wins ' + Math.max(h, a) + '-' + Math.min(h, a);
+  }
+
+  function syncRoundPicker(picks, attrName, r3RowId, r3NoteId, previewId, formDisabled) {
+    var r1 = picks[1];
+    var r2 = picks[2];
+    var decidedIn2 = Boolean(r1 && r2 && r1 === r2);
+    if (decidedIn2) picks[3] = '';
+
+    var btns = document.querySelectorAll('[' + attrName + ']');
+    Array.prototype.forEach.call(btns, function (btn) {
+      var round = parseInt(btn.getAttribute(attrName), 10);
+      var team = btn.getAttribute('data-team');
+      btn.setAttribute('aria-pressed', String(picks[round] === team));
+      if (round === 3) {
+        btn.disabled = formDisabled || decidedIn2 || !(r1 && r2);
+      } else {
+        btn.disabled = !!formDisabled;
+      }
+    });
+
+    var r3Row = $(r3RowId);
+    var r3Note = $(r3NoteId);
+    if (decidedIn2) {
+      r3Row.classList.add('round-disabled');
+      r3Note.textContent = 'Decided 2-0 (' + r1 + ' wins)';
+    } else if (r1 && r2) {
+      r3Row.classList.remove('round-disabled');
+      r3Note.textContent = 'Decider required (1-1)';
+    } else {
+      r3Row.classList.add('round-disabled');
+      r3Note.textContent = 'Decider (if 1-1)';
+    }
+
+    var preview = $(previewId);
+    var prog = buildProgressionFromPicks(picks);
+    if (prog) {
+      preview.textContent = formatRoundsText(prog) + ' (' + seriesScoreText(prog) + ')';
+    } else if (r1 && r2) {
+      preview.textContent = 'Rounds 1 & 2 are split 1-1 — select Round 3 decider winner.';
+    } else {
+      preview.textContent = 'Select Round 1 and Round 2 winners.';
+    }
   }
 
   async function api(url, options) {
@@ -64,12 +133,12 @@
       badge.textContent = 'Final Result';
     }
 
-    if (match.status === 'finished' && match.final_home_score !== null && match.final_away_score !== null) {
+    if (match.status === 'finished' && match.final_rounds && match.final_rounds.length) {
       $('score-display').textContent = match.final_home_score + ' - ' + match.final_away_score;
-      $('score-caption').textContent = 'Official Full-Time Score';
+      $('score-caption').textContent = formatRoundsText(match.final_rounds);
     } else {
       $('score-display').textContent = 'VS';
-      $('score-caption').textContent = match.status === 'open' ? 'Predict the final match score' : 'Entry window closed';
+      $('score-caption').textContent = match.status === 'open' ? 'Best of 3 rounds' : 'Entry window closed';
     }
 
     var form = $('prediction-form');
@@ -77,6 +146,8 @@
     Array.prototype.forEach.call(form.querySelectorAll('input, button'), function (ctrl) {
       ctrl.disabled = closed;
     });
+    syncRoundPicker(state.userPicks, 'data-round', 'round-3-row', 'round-3-note', 'progression-preview', closed);
+
     if (closed) {
       setFeedback(
         $('form-feedback'),
@@ -104,20 +175,24 @@
     var list = $('winners-list');
     list.textContent = '';
 
+    var resultText = match.final_rounds && match.final_rounds.length
+      ? formatRoundsText(match.final_rounds)
+      : (match.final_home_score + ' - ' + match.final_away_score);
+
     var winners = snapshot.winners || [];
     if (!winners.length) {
-      $('winners-sub').textContent = 'Final score ' + match.final_home_score + ' - ' + match.final_away_score + '. No predictor matched the exact score.';
+      $('winners-sub').textContent = 'Official progression: ' + resultText + '. No predictor matched the exact sequence.';
       list.appendChild(el('p', 'muted', 'No winners for this round.'));
       return;
     }
 
     var suffix = ['1st Place', '2nd Place', '3rd Place'];
-    $('winners-sub').textContent = 'Final score ' + match.final_home_score + ' - ' + match.final_away_score + ' — ' + snapshot.stats.exact_matches + ' exact prediction(s) found.';
+    $('winners-sub').textContent = 'Official progression: ' + resultText + ' — ' + snapshot.stats.exact_matches + ' exact prediction(s) found.';
     winners.forEach(function (w) {
       var tile = el('div', 'winner-tile rank-' + w.rank);
       tile.appendChild(el('div', 'winner-rank', suffix[w.rank - 1] + ' • Entry #' + w.order));
       tile.appendChild(el('div', 'winner-name', w.name));
-      tile.appendChild(el('div', 'muted', w.contact_masked + ' • Predicted ' + w.home_score + ' - ' + w.away_score));
+      tile.appendChild(el('div', 'muted', w.contact_masked + ' • ' + formatRoundsText(w.rounds || [])));
       tile.appendChild(el('div', 'winner-prize', formatNaira(w.prize)));
       list.appendChild(tile);
     });
@@ -128,32 +203,44 @@
     $('stats-total').textContent = total + (total === 1 ? ' prediction submitted' : ' predictions submitted');
 
     var hp = total ? Math.round((stats.home_picks / total) * 100) : 0;
-    var dp = total ? Math.round((stats.draw_picks / total) * 100) : 0;
-    var ap = total ? Math.max(0, 100 - hp - dp) : 0;
+    var ap = total ? Math.max(0, 100 - hp) : 0;
 
     $('pct-home').textContent = 'Fellows: ' + hp + '%';
-    $('pct-draw').textContent = 'Draw: ' + dp + '%';
     $('pct-away').textContent = 'Mentors: ' + ap + '%';
 
     if (total === 0) {
-      $('bar-home').style.width = '33.3%';
-      $('bar-draw').style.width = '33.3%';
-      $('bar-away').style.width = '33.4%';
+      $('bar-home').style.width = '50%';
+      $('bar-away').style.width = '50%';
     } else {
       $('bar-home').style.width = hp + '%';
-      $('bar-draw').style.width = dp + '%';
       $('bar-away').style.width = ap + '%';
     }
 
-    var chips = $('top-scores');
+    var chips = $('top-progressions');
     chips.textContent = '';
-    if (!stats.top_scores || !stats.top_scores.length) {
+    if (!stats.top_progressions || !stats.top_progressions.length) {
       chips.appendChild(el('li', 'muted', 'No predictions yet.'));
       return;
     }
-    stats.top_scores.forEach(function (item) {
-      chips.appendChild(el('li', 'score-chip', item.score + ' (' + item.count + ')'));
+    stats.top_progressions.forEach(function (item) {
+      var rounds = item.progression.split('>').map(function (s) { return s.trim(); });
+      chips.appendChild(el('li', 'score-chip', formatRoundsText(rounds) + ' (' + item.count + ')'));
     });
+  }
+
+  function renderProgressionCell(p) {
+    var wrap = el('div', 'round-seq');
+    var rounds = p.rounds && p.rounds.length ? p.rounds : [];
+    if (!rounds.length) {
+      wrap.appendChild(el('span', null, p.home_score + ' - ' + p.away_score));
+      return wrap;
+    }
+    rounds.forEach(function (team, idx) {
+      var cls = team === 'Fellows' ? 'r-pill r-home' : 'r-pill r-away';
+      wrap.appendChild(el('span', cls, 'R' + (idx + 1) + ' ' + team));
+    });
+    wrap.appendChild(el('span', 'r-series', '(' + p.home_score + '-' + p.away_score + ')'));
+    return wrap;
   }
 
   function statusBadge(p) {
@@ -161,7 +248,7 @@
       return el('span', 'badge badge-winner', '#' + p.rank + ' Winner (' + formatNaira(p.prize) + ')');
     }
     if (p.outcome === 'exact_late') {
-      return el('span', 'badge badge-late', 'Exact Score (After Top 3)');
+      return el('span', 'badge badge-late', 'Exact Sequence (After Top 3)');
     }
     if (p.outcome === 'missed') {
       return el('span', 'badge badge-missed', 'Missed');
@@ -175,13 +262,14 @@
     var q = state.query.toLowerCase().trim();
     var rows = predictions.filter(function (p) {
       if (!q) return true;
-      var score = p.home_score + '-' + p.away_score;
-      return p.name.toLowerCase().indexOf(q) !== -1 || score.indexOf(q) !== -1 || String(p.order) === q;
+      var series = p.home_score + '-' + p.away_score;
+      var prog = (p.progression || '').toLowerCase();
+      return p.name.toLowerCase().indexOf(q) !== -1 || prog.indexOf(q) !== -1 || series.indexOf(q) !== -1 || String(p.order) === q;
     });
 
     if (!rows.length) {
       var tr = el('tr');
-      var td = el('td', 'empty-cell', predictions.length ? 'No matching predictions.' : 'Be the first to submit a prediction!');
+      var td = el('td', 'empty-cell', predictions.length ? 'No matching predictions.' : 'Be the first to submit a progression!');
       td.colSpan = 6;
       tr.appendChild(td);
       tbody.appendChild(tr);
@@ -193,7 +281,9 @@
       tr.appendChild(el('td', null, '#' + p.order));
       tr.appendChild(el('td', null, p.name));
       tr.appendChild(el('td', null, p.contact_masked));
-      tr.appendChild(el('td', null, p.home_score + ' - ' + p.away_score));
+      var progTd = el('td');
+      progTd.appendChild(renderProgressionCell(p));
+      tr.appendChild(progTd);
       tr.appendChild(el('td', null, formatTime(p.created_at)));
       var statusTd = el('td');
       statusTd.appendChild(statusBadge(p));
@@ -206,9 +296,16 @@
     if (!state.adminToken) return;
     $('admin-kickoff').value = snapshot.match.kickoff_label || '';
     $('admin-status').value = snapshot.match.status;
-    $('final-score-fields').hidden = snapshot.match.status !== 'finished';
-    if (snapshot.match.final_home_score !== null) $('final-home').value = snapshot.match.final_home_score;
-    if (snapshot.match.final_away_score !== null) $('final-away').value = snapshot.match.final_away_score;
+    $('final-progression-fields').hidden = snapshot.match.status !== 'finished';
+
+    if (snapshot.match.final_rounds && snapshot.match.final_rounds.length) {
+      state.adminPicks = {
+        1: snapshot.match.final_rounds[0] || '',
+        2: snapshot.match.final_rounds[1] || '',
+        3: snapshot.match.final_rounds[2] || ''
+      };
+    }
+    syncRoundPicker(state.adminPicks, 'data-admin-round', 'admin-round-3-row', 'admin-round-3-note', 'admin-progression-preview', false);
 
     var tbody = $('admin-table-body');
     tbody.textContent = '';
@@ -225,7 +322,9 @@
       tr.appendChild(el('td', null, '#' + p.order));
       tr.appendChild(el('td', null, p.name));
       tr.appendChild(el('td', null, p.contact || p.contact_masked));
-      tr.appendChild(el('td', null, p.home_score + ' - ' + p.away_score));
+      var progTd = el('td');
+      progTd.appendChild(renderProgressionCell(p));
+      tr.appendChild(progTd);
       var resTd = el('td');
       resTd.appendChild(statusBadge(p));
       tr.appendChild(resTd);
@@ -251,13 +350,33 @@
     }
   }
 
-  Array.prototype.forEach.call(document.querySelectorAll('.step-btn'), function (btn) {
+  Array.prototype.forEach.call(document.querySelectorAll('[data-round]'), function (btn) {
     btn.addEventListener('click', function () {
-      var input = $(btn.getAttribute('data-target'));
-      var delta = parseInt(btn.getAttribute('data-delta'), 10);
-      var cur = parseInt(input.value || '0', 10);
-      if (isNaN(cur)) cur = 0;
-      input.value = Math.max(0, Math.min(50, cur + delta));
+      var round = parseInt(btn.getAttribute('data-round'), 10);
+      state.userPicks[round] = btn.getAttribute('data-team');
+      syncRoundPicker(
+        state.userPicks,
+        'data-round',
+        'round-3-row',
+        'round-3-note',
+        'progression-preview',
+        state.snapshot && state.snapshot.match.status !== 'open'
+      );
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-admin-round]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var round = parseInt(btn.getAttribute('data-admin-round'), 10);
+      state.adminPicks[round] = btn.getAttribute('data-team');
+      syncRoundPicker(
+        state.adminPicks,
+        'data-admin-round',
+        'admin-round-3-row',
+        'admin-round-3-note',
+        'admin-progression-preview',
+        false
+      );
     });
   });
 
@@ -266,14 +385,19 @@
     var feedback = $('form-feedback');
     setFeedback(feedback, '', false);
 
+    var progression = buildProgressionFromPicks(state.userPicks);
+    if (!progression) {
+      setFeedback(feedback, 'Complete the round-by-round winning progression first.', true);
+      return;
+    }
+
     var btn = $('submit-btn');
     btn.disabled = true;
     try {
       var payload = {
         name: $('pred-name').value,
         contact: $('pred-contact').value,
-        home_score: parseInt($('home-score').value, 10),
-        away_score: parseInt($('away-score').value, 10)
+        progression: progression
       };
       var res = await api('/api/predictions', {
         method: 'POST',
@@ -282,12 +406,12 @@
       renderAll(res.snapshot);
       var p = res.prediction;
       $('ticket-box').hidden = false;
-      $('ticket-summary').textContent = 'Entry #' + p.order + ': ' + p.name + ' picked Fellows ' + p.home_score + ' - ' + p.away_score + ' Mentors';
+      $('ticket-summary').textContent = 'Entry #' + p.order + ': ' + p.name + ' picked ' + formatRoundsText(p.rounds) + ' (' + seriesScoreText(p.rounds) + ')';
       $('ticket-meta').textContent = 'Contact: ' + p.contact_masked + ' • Recorded at ' + formatTime(p.created_at);
       $('prediction-form').reset();
-      $('home-score').value = '0';
-      $('away-score').value = '0';
-      setFeedback(feedback, 'Prediction submitted! Good luck.', false);
+      state.userPicks = { 1: '', 2: '', 3: '' };
+      syncRoundPicker(state.userPicks, 'data-round', 'round-3-row', 'round-3-note', 'progression-preview', false);
+      setFeedback(feedback, 'Progression submitted! Good luck.', false);
     } catch (err) {
       setFeedback(feedback, err.message, true);
     } finally {
@@ -300,7 +424,6 @@
     if (state.snapshot) renderTable(state.snapshot.predictions);
   });
 
-  /* Admin modal */
   var dlg = $('admin-dialog');
   function openAdmin() {
     if (typeof dlg.showModal === 'function') dlg.showModal();
@@ -316,7 +439,7 @@
   $('close-admin-btn').addEventListener('click', closeAdmin);
 
   $('admin-status').addEventListener('change', function (e) {
-    $('final-score-fields').hidden = e.target.value !== 'finished';
+    $('final-progression-fields').hidden = e.target.value !== 'finished';
   });
 
   $('admin-login-form').addEventListener('submit', async function (e) {
@@ -349,8 +472,12 @@
         status: status
       };
       if (status === 'finished') {
-        payload.final_home_score = parseInt($('final-home').value, 10);
-        payload.final_away_score = parseInt($('final-away').value, 10);
+        var finalProg = buildProgressionFromPicks(state.adminPicks);
+        if (!finalProg) {
+          setFeedback(fb, 'Select the complete winning round progression before finishing the match.', true);
+          return;
+        }
+        payload.final_progression = finalProg;
       }
       var res = await api('/api/admin/match', {
         method: 'POST',
@@ -369,6 +496,7 @@
     try {
       var res = await api('/api/admin/reset', { method: 'POST', body: '{}' });
       $('ticket-box').hidden = true;
+      state.adminPicks = { 1: '', 2: '', 3: '' };
       renderAll(res.snapshot);
       setFeedback(fb, 'All predictions cleared and match reopened.', false);
     } catch (err) {
@@ -378,9 +506,9 @@
 
   $('export-csv-btn').addEventListener('click', function () {
     if (!state.snapshot) return;
-    var lines = [['Order', 'Name', 'Contact', 'Fellows', 'Mentors', 'Created At', 'Outcome', 'Prize']];
+    var lines = [['Order', 'Name', 'Contact', 'Winning Progression', 'Fellows Rounds', 'Mentors Rounds', 'Created At', 'Outcome', 'Prize']];
     state.snapshot.predictions.forEach(function (p) {
-      lines.push([p.order, p.name, p.contact || p.contact_masked, p.home_score, p.away_score, p.created_at, p.outcome, p.prize]);
+      lines.push([p.order, p.name, p.contact || p.contact_masked, p.progression, p.home_score, p.away_score, p.created_at, p.outcome, p.prize]);
     });
     var csv = lines.map(function (row) {
       return row.map(function (cell) {
@@ -391,7 +519,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'fellows-vs-mentors-volleyball-predictions.csv';
+    a.download = 'fellows-vs-mentors-volleyball-progression.csv';
     a.click();
     URL.revokeObjectURL(url);
   });

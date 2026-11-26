@@ -95,7 +95,7 @@ def build_poster(out_path=None):
         canvas, (300, 26, 980, 64), radius=19, fill_rgba=(12, 30, 48, 225), outline_rgba=(250, 204, 21, 210), width=2
     )
     draw = ImageDraw.Draw(canvas)
-    draw_centered_text(draw, W / 2, 34, "VOLLEYBALL MATCHDAY FIXTURE  •  SCORE PREDICTOR", f_kicker, (253, 224, 71, 255))
+    draw_centered_text(draw, W / 2, 34, "VOLLEYBALL MATCHDAY FIXTURE  •  BEST OF 3 ROUNDS", f_kicker, (253, 224, 71, 255))
     draw_centered_text(draw, W / 2, 78, "FELLOWS   VS   MENTORS", f_header, (255, 255, 255, 255))
 
     # Two Team Logo Cards
@@ -149,7 +149,7 @@ def build_poster(out_path=None):
         canvas, (125, py1, W - 125, py2), radius=14, fill_rgba=(30, 24, 6, 232), outline_rgba=(250, 204, 21, 195), width=2
     )
     draw = ImageDraw.Draw(canvas)
-    draw_centered_text(draw, W / 2, py1 + 18, "EXACT SCORE PRIZES:    1ST: ₦20,000    •    2ND: ₦10,000    •    3RD: ₦5,000", f_prize, (253, 224, 71, 255))
+    draw_centered_text(draw, W / 2, py1 + 18, "EXACT PROGRESSION PRIZES:   1ST: ₦20,000   •   2ND: ₦10,000   •   3RD: ₦5,000", f_prize, (253, 224, 71, 255))
 
     canvas.convert("RGB").save(out_path, format="PNG")
     return out_path

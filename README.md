@@ -1,11 +1,11 @@
-# Fellows vs Mentors — Volleyball Match Prediction Site
+# Fellows vs Mentors — Volleyball Progression Prediction Site
 
-A full-stack volleyball match score prediction web application built with Python's standard library (`ThreadingHTTPServer` + `sqlite3`) and vanilla HTML/CSS/JavaScript.
+A full-stack volleyball winning-progression prediction web application built with Python's standard library (`ThreadingHTTPServer` + `sqlite3`) and vanilla HTML/CSS/JavaScript.
 
 ## Rules & Prizes
-- **Match:** Fellows vs Mentors (Volleyball)
+- **Match:** Fellows vs Mentors (Volleyball, Best of 3 Rounds)
 - **Venue & Time:** Leef Center Volleyball Court • 5:00 PM
-- **Prizes (first 3 exact-score predictions, ranked strictly by server arrival order):**
+- **Prizes (first 3 exact round-by-round winning progressions, ranked strictly by server arrival order):**
   - **1st:** ₦20,000
   - **2nd:** ₦10,000
   - **3rd:** ₦5,000

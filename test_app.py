@@ -1,4 +1,4 @@
-"""Integration and unit tests for the match prediction backend."""
+"""Integration and unit tests for the Fellows vs Mentors volleyball prediction backend."""
 
 import json
 import os
@@ -43,61 +43,74 @@ class PredictionServerTests(unittest.TestCase):
         except urllib.error.HTTPError as err:
             return err.code, json.loads(err.read().decode("utf-8"))
 
-    def test_prediction_flow_dedup_lock_and_top3_prizes(self):
+    def test_progression_flow_validation_lock_and_top3_prizes(self):
         status, initial = self._req("GET", "/api/state")
         self.assertEqual(status, 200)
         self.assertEqual(initial["match"]["home_team"], "Fellows")
         self.assertEqual(initial["match"]["away_team"], "Mentors")
         self.assertEqual(initial["match"]["prizes"], [20000, 10000, 5000])
 
-        # Submit 5 predictions: 4 exact (2-1), 1 wrong (0-0)
+        # Invalid progressions must fail with 400
+        for bad_prog in [
+            ["Fellows"],
+            ["Fellows", "Mentors"],
+            ["Fellows", "Fellows", "Mentors"],
+            ["Fellows", "Unknown"],
+        ]:
+            bad_code, _ = self._req(
+                "POST",
+                "/api/predictions",
+                {"name": "Tester", "contact": "08010000000", "progression": bad_prog},
+            )
+            self.assertEqual(bad_code, 400)
+
+        # Submit 6 predictions:
+        # 4 exact ["Fellows", "Mentors", "Fellows"], 1 different 2-1 ["Mentors", "Fellows", "Fellows"], 1 2-0 ["Mentors", "Mentors"]
         entries = [
-            ("Ada", "08011112222", 2, 1),
-            ("Bola", "bola@example.com", 0, 0),
-            ("Chidi", "08033334444", 2, 1),
-            ("Dapo", "dapo@example.com", 2, 1),
-            ("Efe", "08055556666", 2, 1),
+            ("Ada", "08011112222", ["Fellows", "Mentors", "Fellows"]),
+            ("Bola", "bola@example.com", ["Mentors", "Fellows", "Fellows"]),
+            ("Chidi", "08033334444", ["Fellows", "Mentors", "Fellows"]),
+            ("Dapo", "dapo@example.com", ["Mentors", "Mentors"]),
+            ("Efe", "08055556666", ["Fellows", "Mentors", "Fellows"]),
+            ("Femi", "08066667777", ["Fellows", "Mentors", "Fellows"]),
         ]
-        for idx, (name, contact, hs, as_) in enumerate(entries, start=1):
+        for idx, (name, contact, prog) in enumerate(entries, start=1):
             code, res = self._req(
                 "POST",
                 "/api/predictions",
-                {"name": name, "contact": contact, "home_score": hs, "away_score": as_},
+                {"name": name, "contact": contact, "progression": prog},
             )
             self.assertEqual(code, 201)
             self.assertEqual(res["prediction"]["order"], idx)
-            # Public response masks raw contact
             self.assertNotEqual(res["prediction"]["contact_masked"], contact)
 
-        # Duplicate phone (with dashes) and duplicate email (uppercase) must fail with 409
+        # Duplicate phone and duplicate email rejected with 409
         code_dup_phone, _ = self._req(
             "POST",
             "/api/predictions",
-            {"name": "Ada Clone", "contact": "0801-111-2222", "home_score": 1, "away_score": 1},
+            {"name": "Ada Clone", "contact": "0801-111-2222", "progression": ["Fellows", "Fellows"]},
         )
         self.assertEqual(code_dup_phone, 409)
         code_dup_email, _ = self._req(
             "POST",
             "/api/predictions",
-            {"name": "Bola Clone", "contact": "BOLA@example.com", "home_score": 1, "away_score": 1},
+            {"name": "Bola Clone", "contact": "BOLA@example.com", "progression": ["Fellows", "Fellows"]},
         )
         self.assertEqual(code_dup_email, 409)
 
-        # Public state does not expose full unmasked contact
+        # Public state hides raw contacts
         _, pub_state = self._req("GET", "/api/state")
         self.assertNotIn("contact", pub_state["predictions"][0])
 
-        # Wrong admin PIN rejected
+        # Wrong PIN rejected; valid PIN returns token and unmasked contacts
         bad_code, _ = self._req("POST", "/api/admin/login", {"pin": "wrong"})
         self.assertEqual(bad_code, 401)
-
-        # Valid admin login returns token and unmasked contacts
         ok_code, login_res = self._req("POST", "/api/admin/login", {"pin": "secret99"})
         self.assertEqual(ok_code, 200)
         token = login_res["token"]
         self.assertEqual(login_res["snapshot"]["predictions"][0]["contact"], "08011112222")
 
-        # Locking predictions blocks new submissions
+        # Locking blocks new entries
         lock_code, _ = self._req(
             "POST", "/api/admin/match", {"status": "locked"}, token=token
         )
@@ -105,15 +118,16 @@ class PredictionServerTests(unittest.TestCase):
         blocked_code, _ = self._req(
             "POST",
             "/api/predictions",
-            {"name": "Late", "contact": "08099990000", "home_score": 2, "away_score": 1},
+            {"name": "Late", "contact": "08099990000", "progression": ["Fellows", "Mentors", "Fellows"]},
         )
         self.assertEqual(blocked_code, 403)
 
-        # Finishing match with 2-1 awards first 3 exact predictors: Ada, Chidi, Dapo
+        # Finishing match awards first 3 exact progression matches: Ada, Chidi, Efe
+        # Bola had 2-1 too, but wrong round order (Mentors -> Fellows -> Fellows), so Bola must miss!
         fin_code, fin_res = self._req(
             "POST",
             "/api/admin/match",
-            {"status": "finished", "final_home_score": 2, "final_away_score": 1},
+            {"status": "finished", "final_progression": ["Fellows", "Mentors", "Fellows"]},
             token=token,
         )
         self.assertEqual(fin_code, 200)
@@ -121,13 +135,13 @@ class PredictionServerTests(unittest.TestCase):
         self.assertEqual(len(winners), 3)
         self.assertEqual(
             [(w["name"], w["rank"], w["prize"]) for w in winners],
-            [("Ada", 1, 20000), ("Chidi", 2, 10000), ("Dapo", 3, 5000)],
+            [("Ada", 1, 20000), ("Chidi", 2, 10000), ("Efe", 3, 5000)],
         )
-        # 4th exact hit (Efe) is marked exact_late with 0 prize
-        efe = fin_res["snapshot"]["predictions"][4]
-        self.assertEqual(efe["name"], "Efe")
-        self.assertEqual(efe["outcome"], "exact_late")
-        self.assertEqual(efe["prize"], 0)
+        bola = fin_res["snapshot"]["predictions"][1]
+        self.assertEqual(bola["outcome"], "missed")
+        femi = fin_res["snapshot"]["predictions"][5]
+        self.assertEqual(femi["outcome"], "exact_late")
+        self.assertEqual(femi["prize"], 0)
 
         # Reset clears predictions and reopens
         rst_code, rst_res = self._req("POST", "/api/admin/reset", {}, token=token)

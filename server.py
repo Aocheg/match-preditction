@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Volleyball Match Prediction web server for Fellows vs Mentors.
+"""Volleyball Match Prediction web server for Fellows vs Mentors (Best of 3 rounds).
 
 Zero-dependency Python 3 server using ThreadingHTTPServer and SQLite.
 """
@@ -23,8 +23,10 @@ DEFAULT_DB_PATH = os.path.join(BASE_DIR, "predictions.db")
 
 HOME_TEAM = "Fellows"
 AWAY_TEAM = "Mentors"
+DEFAULT_KICKOFF_LABEL = "Venue: Leef Center Volleyball Court • 5:00 PM"
 PRIZES = [20000, 10000, 5000]
 VALID_STATUSES = {"open", "locked", "finished"}
+VALID_TEAMS = {HOME_TEAM, AWAY_TEAM}
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
@@ -60,17 +62,38 @@ def mask_contact(raw):
     return cleaned[:3] + "****" + cleaned[-3:]
 
 
-def parse_score(val, label):
-    """Validate a predicted or final match score as an integer between 0 and 50."""
-    if isinstance(val, bool):
-        raise ValueError(f"{label} must be a whole number.")
-    try:
-        num = int(val)
-    except (TypeError, ValueError):
-        raise ValueError(f"{label} must be a whole number.")
-    if num < 0 or num > 50:
-        raise ValueError(f"{label} must be between 0 and 50.")
-    return num
+def parse_progression(raw):
+    """Validate a Best-of-3 volleyball winning round progression.
+
+    Returns (canonical_rounds_list, canonical_key, home_wins, away_wins).
+    """
+    if isinstance(raw, str):
+        parts = [p.strip() for p in raw.replace("→", ">").split(">") if p.strip()]
+    elif isinstance(raw, list):
+        parts = [str(p).strip() for p in raw if str(p).strip()]
+    else:
+        raise ValueError("Select round winners in order (Best of 3).")
+
+    if len(parts) < 2 or len(parts) > 3:
+        raise ValueError("Best-of-3 progression must have 2 or 3 rounds.")
+
+    home_wins = 0
+    away_wins = 0
+    for idx, team in enumerate(parts):
+        if team not in VALID_TEAMS:
+            raise ValueError(f"Round {idx + 1} winner must be {HOME_TEAM} or {AWAY_TEAM}.")
+        if home_wins == 2 or away_wins == 2:
+            raise ValueError("Match ends as soon as one team wins 2 rounds; Round 3 is not played.")
+        if team == HOME_TEAM:
+            home_wins += 1
+        else:
+            away_wins += 1
+
+    if home_wins != 2 and away_wins != 2:
+        raise ValueError("One team must reach 2 round wins to complete the Best-of-3 progression.")
+
+    canonical_key = " > ".join(parts)
+    return parts, canonical_key, home_wins, away_wins
 
 
 class PredictionStore:
@@ -86,6 +109,11 @@ class PredictionStore:
         conn.row_factory = sqlite3.Row
         return conn
 
+    def _ensure_column(self, conn, table, column, ddl):
+        cols = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+        if column not in cols:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}")
+
     def _init_db(self):
         os.makedirs(os.path.dirname(os.path.abspath(self.db_path)), exist_ok=True)
         with self._lock, self._connect() as conn:
@@ -99,6 +127,7 @@ class PredictionStore:
                     kickoff_label TEXT NOT NULL DEFAULT 'Venue: Leef Center Volleyball Court • 5:00 PM',
                     final_home_score INTEGER,
                     final_away_score INTEGER,
+                    final_progression TEXT,
                     updated_at TEXT NOT NULL
                 )
                 """
@@ -112,19 +141,23 @@ class PredictionStore:
                     contact_norm TEXT NOT NULL UNIQUE,
                     home_score INTEGER NOT NULL,
                     away_score INTEGER NOT NULL,
+                    progression TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL
                 )
                 """
             )
+            self._ensure_column(conn, "match_state", "final_progression", "TEXT")
+            self._ensure_column(conn, "predictions", "progression", "TEXT NOT NULL DEFAULT ''")
+
             row = conn.execute("SELECT id FROM match_state WHERE id = 1").fetchone()
             if not row:
                 conn.execute(
                     """
                     INSERT INTO match_state (
                         id, home_team, away_team, status, kickoff_label, updated_at
-                    ) VALUES (1, ?, ?, 'open', 'Venue: Leef Center Volleyball Court • 5:00 PM', ?)
+                    ) VALUES (1, ?, ?, 'open', ?, ?)
                     """,
-                    (HOME_TEAM, AWAY_TEAM, utc_now_iso()),
+                    (HOME_TEAM, AWAY_TEAM, DEFAULT_KICKOFF_LABEL, utc_now_iso()),
                 )
             else:
                 conn.execute(
@@ -134,12 +167,12 @@ class PredictionStore:
                         away_team = ?,
                         kickoff_label = CASE
                             WHEN kickoff_label IN ('Matchday Prediction', 'Venue: Mint School Pitch • 5:00 PM')
-                            THEN 'Venue: Leef Center Volleyball Court • 5:00 PM'
+                            THEN ?
                             ELSE kickoff_label
                         END
                     WHERE id = 1
                     """,
-                    (HOME_TEAM, AWAY_TEAM),
+                    (HOME_TEAM, AWAY_TEAM, DEFAULT_KICKOFF_LABEL),
                 )
 
     def get_snapshot(self, include_contacts=False):
@@ -150,6 +183,9 @@ class PredictionStore:
                 "SELECT * FROM predictions ORDER BY id ASC"
             ).fetchall()
 
+        final_prog = match_row["final_progression"] or ""
+        final_rounds = [p.strip() for p in final_prog.split(">") if p.strip()] if final_prog else []
+
         match = {
             "home_team": match_row["home_team"],
             "away_team": match_row["away_team"],
@@ -157,42 +193,40 @@ class PredictionStore:
             "kickoff_label": match_row["kickoff_label"],
             "final_home_score": match_row["final_home_score"],
             "final_away_score": match_row["final_away_score"],
+            "final_progression": final_prog,
+            "final_rounds": final_rounds,
             "updated_at": match_row["updated_at"],
             "prizes": PRIZES,
         }
 
-        is_finished = (
-            match["status"] == "finished"
-            and match["final_home_score"] is not None
-            and match["final_away_score"] is not None
-        )
+        is_finished = match["status"] == "finished" and bool(final_prog)
 
         exact_hits = 0
         winners = []
         predictions = []
         home_picks = 0
-        draw_picks = 0
         away_picks = 0
-        score_counts = {}
+        prog_counts = {}
 
         for idx, row in enumerate(pred_rows, start=1):
             hs = row["home_score"]
             as_ = row["away_score"]
+            prog = row["progression"] or ""
+            rounds = [p.strip() for p in prog.split(">") if p.strip()] if prog else []
+
             if hs > as_:
                 home_picks += 1
-            elif hs < as_:
+            elif as_ > hs:
                 away_picks += 1
-            else:
-                draw_picks += 1
 
-            score_key = f"{hs}-{as_}"
-            score_counts[score_key] = score_counts.get(score_key, 0) + 1
+            if prog:
+                prog_counts[prog] = prog_counts.get(prog, 0) + 1
 
             rank = None
             prize = 0
             outcome = "pending"
             if is_finished:
-                if hs == match["final_home_score"] and as_ == match["final_away_score"]:
+                if prog == final_prog:
                     exact_hits += 1
                     if exact_hits <= len(PRIZES):
                         rank = exact_hits
@@ -210,6 +244,8 @@ class PredictionStore:
                 "contact_masked": mask_contact(row["contact"]),
                 "home_score": hs,
                 "away_score": as_,
+                "progression": prog,
+                "rounds": rounds,
                 "created_at": row["created_at"],
                 "outcome": outcome,
                 "rank": rank,
@@ -221,33 +257,31 @@ class PredictionStore:
             if rank is not None:
                 winners.append(entry)
 
-        top_scores = sorted(
-            ({"score": k, "count": v} for k, v in score_counts.items()),
-            key=lambda x: (-x["count"], x["score"]),
-        )[:5]
+        top_progressions = sorted(
+            ({"progression": k, "count": v} for k, v in prog_counts.items()),
+            key=lambda x: (-x["count"], x["progression"]),
+        )[:6]
 
         return {
             "match": match,
             "stats": {
                 "total": len(predictions),
                 "home_picks": home_picks,
-                "draw_picks": draw_picks,
                 "away_picks": away_picks,
                 "exact_matches": exact_hits if is_finished else 0,
-                "top_scores": top_scores,
+                "top_progressions": top_progressions,
             },
             "winners": winners,
             "predictions": predictions,
         }
 
-    def add_prediction(self, name, contact, home_score, away_score):
-        """Validate and store a new prediction while predictions are open."""
+    def add_prediction(self, name, contact, progression):
+        """Validate and store a new Best-of-3 round progression while predictions are open."""
         clean_name = " ".join(str(name or "").split())
         if len(clean_name) < 2 or len(clean_name) > 60:
             raise ValueError("Name must be between 2 and 60 characters.")
         clean_contact, norm_contact = normalize_contact(str(contact or ""))
-        hs = parse_score(home_score, HOME_TEAM + " score")
-        as_ = parse_score(away_score, AWAY_TEAM + " score")
+        rounds, canonical_prog, hs, as_ = parse_progression(progression)
 
         with self._lock, self._connect() as conn:
             match_row = conn.execute(
@@ -263,10 +297,10 @@ class PredictionStore:
                 cur = conn.execute(
                     """
                     INSERT INTO predictions (
-                        name, contact, contact_norm, home_score, away_score, created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?)
+                        name, contact, contact_norm, home_score, away_score, progression, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
                     """,
-                    (clean_name, clean_contact, norm_contact, hs, as_, created_at),
+                    (clean_name, clean_contact, norm_contact, hs, as_, canonical_prog, created_at),
                 )
             except sqlite3.IntegrityError:
                 raise FileExistsError(
@@ -284,11 +318,13 @@ class PredictionStore:
             "contact_masked": mask_contact(clean_contact),
             "home_score": hs,
             "away_score": as_,
+            "progression": canonical_prog,
+            "rounds": rounds,
             "created_at": created_at,
         }
 
-    def update_match(self, status=None, kickoff_label=None, final_home=None, final_away=None):
-        """Update match status, label, or final score."""
+    def update_match(self, status=None, kickoff_label=None, final_progression=None):
+        """Update match status, label, or final winning round progression."""
         with self._lock, self._connect() as conn:
             row = conn.execute("SELECT * FROM match_state WHERE id = 1").fetchone()
             new_status = status if status is not None else row["status"]
@@ -304,22 +340,23 @@ class PredictionStore:
 
             new_fh = row["final_home_score"]
             new_fa = row["final_away_score"]
+            new_fp = row["final_progression"]
             if new_status == "finished":
-                if final_home is None or final_away is None:
-                    raise ValueError("Provide both final scores to finish the match.")
-                new_fh = parse_score(final_home, HOME_TEAM + " final score")
-                new_fa = parse_score(final_away, AWAY_TEAM + " final score")
+                if not final_progression:
+                    raise ValueError("Select the final winning round progression to finish the match.")
+                _, new_fp, new_fh, new_fa = parse_progression(final_progression)
             elif status in {"open", "locked"}:
                 new_fh = None
                 new_fa = None
+                new_fp = None
 
             conn.execute(
                 """
                 UPDATE match_state
-                SET status = ?, kickoff_label = ?, final_home_score = ?, final_away_score = ?, updated_at = ?
+                SET status = ?, kickoff_label = ?, final_home_score = ?, final_away_score = ?, final_progression = ?, updated_at = ?
                 WHERE id = 1
                 """,
-                (new_status, new_label, new_fh, new_fa, utc_now_iso()),
+                (new_status, new_label, new_fh, new_fa, new_fp, utc_now_iso()),
             )
         return self.get_snapshot(include_contacts=True)
 
@@ -331,7 +368,7 @@ class PredictionStore:
             conn.execute(
                 """
                 UPDATE match_state
-                SET status = 'open', final_home_score = NULL, final_away_score = NULL, updated_at = ?
+                SET status = 'open', final_home_score = NULL, final_away_score = NULL, final_progression = NULL, updated_at = ?
                 WHERE id = 1
                 """,
                 (utc_now_iso(),),
@@ -370,7 +407,6 @@ def make_handler(store, auth):
             super().__init__(*args, directory=STATIC_DIR, **kwargs)
 
         def log_message(self, format, *args):
-            # Keep server logs concise.
             super().log_message(format, *args)
 
         def _send_json(self, code, payload):
@@ -428,8 +464,7 @@ def make_handler(store, auth):
                     created = store.add_prediction(
                         data.get("name"),
                         data.get("contact"),
-                        data.get("home_score"),
-                        data.get("away_score"),
+                        data.get("progression"),
                     )
                     self._send_json(
                         HTTPStatus.CREATED,
@@ -463,8 +498,7 @@ def make_handler(store, auth):
                     snapshot = store.update_match(
                         status=data.get("status"),
                         kickoff_label=data.get("kickoff_label"),
-                        final_home=data.get("final_home_score"),
-                        final_away=data.get("final_away_score"),
+                        final_progression=data.get("final_progression"),
                     )
                     self._send_json(HTTPStatus.OK, {"snapshot": snapshot})
                     return

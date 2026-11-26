@@ -3,22 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fellows vs Mentors — Volleyball Score Predictor</title>
+  <title>Fellows vs Mentors — Volleyball Progression Predictor</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <div class="court-bg" aria-hidden="true">
     <div class="court-floor"></div>
     <svg class="court-lines" viewBox="0 0 1200 720" preserveAspectRatio="none">
-      <!-- Outer volleyball court boundary -->
       <rect x="80" y="70" width="1040" height="580" rx="4" fill="rgba(194, 92, 42, 0.24)" />
-      <!-- Attack zones (front courts) -->
       <rect x="425" y="70" width="175" height="580" fill="rgba(234, 138, 62, 0.14)" stroke="none" />
       <rect x="600" y="70" width="175" height="580" fill="rgba(234, 138, 62, 0.14)" stroke="none" />
-      <!-- 3-meter attack lines -->
       <line x1="425" y1="70" x2="425" y2="650" />
       <line x1="775" y1="70" x2="775" y2="650" />
-      <!-- Center line & net mesh -->
       <line x1="600" y1="45" x2="600" y2="675" stroke-width="5" stroke="rgba(255,255,255,0.45)" />
       <line x1="600" y1="45" x2="600" y2="675" stroke-width="14" stroke-dasharray="6 8" stroke="rgba(250, 204, 21, 0.22)" />
     </svg>
@@ -60,16 +56,16 @@
 
     <div class="wrap hero-content">
       <div class="hero-left">
-        <p class="hero-kicker">VOLLEYBALL SHOWDOWN &bull; LEEF CENTER VOLLEYBALL COURT &bull; 5:00 PM</p>
+        <p class="hero-kicker">VOLLEYBALL SHOWDOWN &bull; BEST OF 3 ROUNDS &bull; 5:00 PM</p>
         <h1 class="hero-title">
           <span class="team-highlight-home">Fellows</span>
           <span class="title-vs">VS</span>
           <span class="team-highlight-away">Mentors</span>
         </h1>
-        <p class="hero-lead">Predict the exact final match score before first serve at 5:00 PM. The first three predictors with the exact scoreline win cash prizes — ranked strictly by submission time.</p>
+        <p class="hero-lead">Predict the exact round-by-round winning progression (Best of 3 sets) at Leef Center Volleyball Court. The first three predictors with the exact winning progression win cash prizes.</p>
 
         <div class="hero-cta-row">
-          <a class="btn btn-primary hero-cta" href="#predict">Predict Score Now</a>
+          <a class="btn btn-primary hero-cta" href="#predict">Predict Progression Now</a>
           <a class="btn btn-glass" href="#leaderboard">Live Entries</a>
           <a class="btn btn-glass" href="/fixture-poster.png" download="fellows-vs-mentors-volleyball-fixture.png">Download Fixture</a>
         </div>
@@ -85,7 +81,7 @@
 
           <div class="vs-box">
             <span id="score-display" class="vs-text">VS</span>
-            <span id="score-caption" class="vs-caption">Predict final score</span>
+            <span id="score-caption" class="vs-caption">Best of 3 rounds</span>
           </div>
 
           <div class="hud-team">
@@ -99,26 +95,26 @@
           <article class="prize-card prize-1">
             <span class="prize-medal">1ST</span>
             <div>
-              <span class="prize-rank">1st Exact Score</span>
+              <span class="prize-rank">1st Exact Progression</span>
               <strong class="prize-amt">₦20,000</strong>
             </div>
           </article>
           <article class="prize-card prize-2">
             <span class="prize-medal">2ND</span>
             <div>
-              <span class="prize-rank">2nd Exact Score</span>
+              <span class="prize-rank">2nd Exact Progression</span>
               <strong class="prize-amt">₦10,000</strong>
             </div>
           </article>
           <article class="prize-card prize-3">
             <span class="prize-medal">3RD</span>
             <div>
-              <span class="prize-rank">3rd Exact Score</span>
+              <span class="prize-rank">3rd Exact Progression</span>
               <strong class="prize-amt">₦5,000</strong>
             </div>
           </article>
         </section>
-        <p class="prize-rule">One entry per phone number or email. First 3 exact scores win in order of arrival.</p>
+        <p class="prize-rule">One entry per phone number or email. First 3 exact round sequences win in order of submission.</p>
       </div>
     </div>
   </header>
@@ -129,7 +125,7 @@
         <div>
           <span class="section-tag">VOLLEYBALL MATCHUP</span>
           <h2>Fellows vs Mentors</h2>
-          <p class="muted">Venue: <strong>Leef Center Volleyball Court</strong> &bull; Time: <strong>5:00 PM</strong></p>
+          <p class="muted">Venue: <strong>Leef Center Volleyball Court</strong> &bull; Time: <strong>5:00 PM</strong> &bull; Format: <strong>Best of 3 Rounds</strong></p>
         </div>
         <a class="btn btn-secondary" href="/fixture-poster.png" download="fellows-vs-mentors-volleyball-fixture.png">Download Fixture Poster</a>
       </div>
@@ -150,12 +146,10 @@
             </defs>
             <path d="M110 14 L192 44 V116 C192 166 152 196 110 208 C68 196 28 166 28 116 V44 Z" fill="url(#fellows-shield)" stroke="url(#fellows-rim)" stroke-width="6" />
             <path d="M110 26 L180 51 V114 C180 156 146 182 110 194 C74 182 40 156 40 114 V51 Z" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2" />
-            <!-- Volleyball emblem -->
             <circle cx="110" cy="86" r="34" fill="#fef08a" stroke="#052e16" stroke-width="3" />
             <path d="M110 52 C123 68, 124 83, 110 86 C96 89, 97 104, 110 120" fill="none" stroke="#052e16" stroke-width="2.6" />
             <path d="M78 75 C94 71, 103 78, 110 86 C117 94, 126 101, 142 97" fill="none" stroke="#052e16" stroke-width="2.6" />
             <path d="M83 105 C94 97, 102 91, 110 86 C118 81, 126 75, 137 67" fill="none" stroke="#052e16" stroke-width="2.6" />
-            <!-- Ribbon banner -->
             <rect x="42" y="132" width="136" height="32" rx="8" fill="#071a10" stroke="#facc15" stroke-width="2.5" />
             <text x="110" y="153" text-anchor="middle" fill="#fde047" font-family="system-ui, sans-serif" font-size="16" font-weight="900" letter-spacing="2">FELLOWS</text>
           </svg>
@@ -183,12 +177,10 @@
             </defs>
             <path d="M110 14 L192 44 V116 C192 166 152 196 110 208 C68 196 28 166 28 116 V44 Z" fill="url(#mentors-shield)" stroke="url(#mentors-rim)" stroke-width="6" />
             <path d="M110 26 L180 51 V114 C180 156 146 182 110 194 C74 182 40 156 40 114 V51 Z" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" />
-            <!-- Volleyball emblem -->
             <circle cx="110" cy="86" r="34" fill="#f8fafc" stroke="#1e1b4b" stroke-width="3" />
             <path d="M110 52 C123 68, 124 83, 110 86 C96 89, 97 104, 110 120" fill="none" stroke="#991b1b" stroke-width="2.6" />
             <path d="M78 75 C94 71, 103 78, 110 86 C117 94, 126 101, 142 97" fill="none" stroke="#991b1b" stroke-width="2.6" />
             <path d="M83 105 C94 97, 102 91, 110 86 C118 81, 126 75, 137 67" fill="none" stroke="#991b1b" stroke-width="2.6" />
-            <!-- Ribbon banner -->
             <rect x="42" y="132" width="136" height="32" rx="8" fill="#170b18" stroke="#f8fafc" stroke-width="2.5" />
             <text x="110" y="153" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="16" font-weight="900" letter-spacing="2">MENTORS</text>
           </svg>
@@ -215,8 +207,8 @@
       <div class="card-head">
         <div>
           <span class="section-tag">LOCK YOUR PICK</span>
-          <h2 id="form-heading">Submit Your Score Prediction</h2>
-          <p class="muted">Enter your details and predicted volleyball match score. Timestamps are recorded by the server.</p>
+          <h2 id="form-heading">Predict the Winning Progression</h2>
+          <p class="muted">Pick who wins each round in exact order (first to 2 rounds wins). Round 3 only opens if Rounds 1 &amp; 2 split 1–1.</p>
         </div>
       </div>
 
@@ -232,33 +224,46 @@
           </div>
         </div>
 
-        <div class="score-picker" role="group" aria-label="Score prediction">
-          <div class="score-team">
-            <span class="score-badge home-dot">HOME</span>
-            <span class="score-label">Fellows</span>
-            <div class="stepper">
-              <button class="step-btn" type="button" data-target="home-score" data-delta="-1" aria-label="Decrease Fellows score">−</button>
-              <input id="home-score" name="home_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Fellows score">
-              <button class="step-btn" type="button" data-target="home-score" data-delta="1" aria-label="Increase Fellows score">+</button>
+        <div class="progression-picker" role="group" aria-label="Round-by-round winner progression">
+          <div class="round-row" data-round-row="1">
+            <div class="round-label">
+              <span class="round-num">ROUND 1</span>
+              <span class="muted-xs">Opening Set</span>
+            </div>
+            <div class="round-choices">
+              <button class="pick-btn pick-home" type="button" data-round="1" data-team="Fellows" aria-pressed="false">Fellows</button>
+              <button class="pick-btn pick-away" type="button" data-round="1" data-team="Mentors" aria-pressed="false">Mentors</button>
             </div>
           </div>
 
-          <span class="score-colon" aria-hidden="true">:</span>
-
-          <div class="score-team">
-            <span class="score-badge away-dot">AWAY</span>
-            <span class="score-label">Mentors</span>
-            <div class="stepper">
-              <button class="step-btn" type="button" data-target="away-score" data-delta="-1" aria-label="Decrease Mentors score">−</button>
-              <input id="away-score" name="away_score" type="number" min="0" max="50" value="0" inputmode="numeric" required aria-label="Mentors score">
-              <button class="step-btn" type="button" data-target="away-score" data-delta="1" aria-label="Increase Mentors score">+</button>
+          <div class="round-row" data-round-row="2">
+            <div class="round-label">
+              <span class="round-num">ROUND 2</span>
+              <span class="muted-xs">Second Set</span>
+            </div>
+            <div class="round-choices">
+              <button class="pick-btn pick-home" type="button" data-round="2" data-team="Fellows" aria-pressed="false">Fellows</button>
+              <button class="pick-btn pick-away" type="button" data-round="2" data-team="Mentors" aria-pressed="false">Mentors</button>
             </div>
           </div>
+
+          <div id="round-3-row" class="round-row round-disabled" data-round-row="3">
+            <div class="round-label">
+              <span class="round-num">ROUND 3</span>
+              <span id="round-3-note" class="muted-xs">Decider (if 1–1)</span>
+            </div>
+            <div class="round-choices">
+              <button class="pick-btn pick-home" type="button" data-round="3" data-team="Fellows" aria-pressed="false" disabled>Fellows</button>
+              <button class="pick-btn pick-away" type="button" data-round="3" data-team="Mentors" aria-pressed="false" disabled>Mentors</button>
+            </div>
+          </div>
+
+          <div id="progression-preview" class="prog-preview">Select Round 1 and Round 2 winners to lock your progression.</div>
         </div>
 
         <div id="form-feedback" class="feedback" role="status" hidden></div>
 
-        <button id="submit-btn" class="btn btn-primary btn-block" type="submit">Lock In Prediction</button>
+        <button id="submit-btn" class="btn btn-primary btn-block" type="submit">Lock In Progression</button>
       </form>
 
       <div id="ticket-box" class="ticket" hidden>
@@ -277,22 +282,20 @@
         </div>
       </div>
 
-      <div class="split-bar-wrap" aria-label="Pick distribution">
+      <div class="split-bar-wrap" aria-label="Match winner pick distribution">
         <div class="split-labels">
           <span id="pct-home">Fellows: 0%</span>
-          <span id="pct-draw">Draw: 0%</span>
           <span id="pct-away">Mentors: 0%</span>
         </div>
         <div class="split-bar">
-          <div id="bar-home" class="bar-seg bar-home" style="width: 33.3%"></div>
-          <div id="bar-draw" class="bar-seg bar-draw" style="width: 33.3%"></div>
-          <div id="bar-away" class="bar-seg bar-away" style="width: 33.4%"></div>
+          <div id="bar-home" class="bar-seg bar-home" style="width: 50%"></div>
+          <div id="bar-away" class="bar-seg bar-away" style="width: 50%"></div>
         </div>
       </div>
 
       <div class="popular-box">
-        <h3>Trending Scorelines</h3>
-        <ul id="top-scores" class="chip-list">
+        <h3>Most Picked Progressions</h3>
+        <ul id="top-progressions" class="chip-list">
           <li class="muted">No predictions yet.</li>
         </ul>
       </div>
@@ -300,10 +303,10 @@
       <div class="rules-panel">
         <h3>How Prizes Are Awarded</h3>
         <ul>
-          <li><strong>1st Exact Score:</strong> ₦20,000</li>
-          <li><strong>2nd Exact Score:</strong> ₦10,000</li>
-          <li><strong>3rd Exact Score:</strong> ₦5,000</li>
-          <li>Exact match is based on the official final volleyball score, ordered by server timestamp.</li>
+          <li><strong>1st Exact Progression:</strong> ₦20,000</li>
+          <li><strong>2nd Exact Progression:</strong> ₦10,000</li>
+          <li><strong>3rd Exact Progression:</strong> ₦5,000</li>
+          <li>Exact match means the exact order of round winners (for example, <em>Fellows → Mentors → Fellows</em> is different from <em>Mentors → Fellows → Fellows</em>).</li>
         </ul>
       </div>
     </section>
@@ -313,11 +316,11 @@
         <div>
           <span class="section-tag">ENTRY QUEUE</span>
           <h2 id="board-heading">Submitted Predictions</h2>
-          <p class="muted">Ordered strictly by entry number (#1, #2, #3...) — first three exact scores win.</p>
+          <p class="muted">Ordered strictly by entry number (#1, #2, #3...) — first three exact progressions win.</p>
         </div>
         <div class="search-wrap">
           <label class="sr-only" for="search-input">Search predictions</label>
-          <input id="search-input" type="search" placeholder="Search name or score (e.g. 3-1)">
+          <input id="search-input" type="search" placeholder="Search name, Fellows, Mentors, or 2-1">
         </div>
       </div>
 
@@ -328,7 +331,7 @@
               <th scope="col">#</th>
               <th scope="col">Predictor</th>
               <th scope="col">Contact</th>
-              <th scope="col">Prediction</th>
+              <th scope="col">Winning Progression</th>
               <th scope="col">Submitted (UTC)</th>
               <th scope="col">Status</th>
             </tr>
@@ -342,7 +345,7 @@
   </main>
 
   <footer class="wrap footer">
-    <p>Fellows vs Mentors (Volleyball) &bull; Leef Center Volleyball Court, 5:00 PM &bull; Prizes: ₦20,000, ₦10,000, ₦5,000.</p>
+    <p>Fellows vs Mentors (Volleyball, Best of 3) &bull; Leef Center Volleyball Court, 5:00 PM &bull; Prizes: ₦20,000, ₦10,000, ₦5,000.</p>
     <button id="footer-admin-btn" class="link-btn" type="button">Manage Match (Admin)</button>
   </footer>
 
@@ -354,7 +357,7 @@
       </div>
 
       <div id="admin-login-view" class="modal-body">
-        <p class="muted">Sign in with the admin PIN to lock predictions, publish the final score, and view full winner contacts.</p>
+        <p class="muted">Sign in with the admin PIN to lock predictions, publish the winning round progression, and view full winner contacts.</p>
         <form id="admin-login-form">
           <div class="field">
             <label for="admin-pin">Admin PIN</label>
@@ -367,7 +370,7 @@
 
       <div id="admin-controls-view" class="modal-body" hidden>
         <form id="admin-match-form" class="admin-section">
-          <h3>Match Status &amp; Final Score</h3>
+          <h3>Match Status &amp; Official Winning Progression</h3>
           <div class="field-row">
             <div class="field">
               <label for="admin-kickoff">Match Info / Venue &amp; Time</label>
@@ -378,20 +381,37 @@
               <select id="admin-status">
                 <option value="open">Open (accepting entries)</option>
                 <option value="locked">Locked (serve / closed)</option>
-                <option value="finished">Finished (publish final score)</option>
+                <option value="finished">Finished (publish final progression)</option>
               </select>
             </div>
           </div>
 
-          <div id="final-score-fields" class="field-row" hidden>
-            <div class="field">
-              <label for="final-home">Final Score: Fellows</label>
-              <input id="final-home" type="number" min="0" max="50" value="0">
+          <div id="final-progression-fields" class="progression-picker admin-prog-picker" hidden>
+            <div class="round-row">
+              <div class="round-label"><span class="round-num">ROUND 1</span></div>
+              <div class="round-choices">
+                <button class="pick-btn pick-home" type="button" data-admin-round="1" data-team="Fellows" aria-pressed="false">Fellows</button>
+                <button class="pick-btn pick-away" type="button" data-admin-round="1" data-team="Mentors" aria-pressed="false">Mentors</button>
+              </div>
             </div>
-            <div class="field">
-              <label for="final-away">Final Score: Mentors</label>
-              <input id="final-away" type="number" min="0" max="50" value="0">
+            <div class="round-row">
+              <div class="round-label"><span class="round-num">ROUND 2</span></div>
+              <div class="round-choices">
+                <button class="pick-btn pick-home" type="button" data-admin-round="2" data-team="Fellows" aria-pressed="false">Fellows</button>
+                <button class="pick-btn pick-away" type="button" data-admin-round="2" data-team="Mentors" aria-pressed="false">Mentors</button>
+              </div>
             </div>
+            <div id="admin-round-3-row" class="round-row round-disabled">
+              <div class="round-label">
+                <span class="round-num">ROUND 3</span>
+                <span id="admin-round-3-note" class="muted-xs">Decider (if 1–1)</span>
+              </div>
+              <div class="round-choices">
+                <button class="pick-btn pick-home" type="button" data-admin-round="3" data-team="Fellows" aria-pressed="false" disabled>Fellows</button>
+                <button class="pick-btn pick-away" type="button" data-admin-round="3" data-team="Mentors" aria-pressed="false" disabled>Mentors</button>
+              </div>
+            </div>
+            <div id="admin-progression-preview" class="prog-preview">Select Round 1 and Round 2 winners.</div>
           </div>
 
           <div id="admin-feedback" class="feedback" hidden></div>
@@ -412,7 +432,7 @@
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Full Contact</th>
-                  <th scope="col">Score</th>
+                  <th scope="col">Progression</th>
                   <th scope="col">Result</th>
                 </tr>
               </thead>
